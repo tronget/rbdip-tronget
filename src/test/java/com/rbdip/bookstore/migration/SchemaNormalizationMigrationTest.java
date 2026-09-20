@@ -53,10 +53,16 @@ class SchemaNormalizationMigrationTest {
                     .isPositive();
             assertThat(queryString(
                     connection,
-                    "SELECT customer.full_name FROM orders "
+                    "SELECT customer.first_name FROM orders "
                             + "JOIN customers AS customer ON customer.id = orders.customer_id "
                             + "WHERE orders.id = " + orderId))
-                    .isEqualTo("Ivan Petrov");
+                    .isEqualTo("Ivan");
+            assertThat(queryString(
+                    connection,
+                    "SELECT customer.last_name FROM orders "
+                            + "JOIN customers AS customer ON customer.id = orders.customer_id "
+                            + "WHERE orders.id = " + orderId))
+                    .isEqualTo("Petrov");
             assertThat(queryLong(
                     connection,
                     "SELECT COUNT(*) FROM order_items AS item "
@@ -75,6 +81,9 @@ class SchemaNormalizationMigrationTest {
             assertThat(columnExists(connection, "orders", "customer_phone")).isFalse();
             assertThat(columnExists(connection, "order_items", "product_name")).isFalse();
             assertThat(columnExists(connection, "order_items", "product_price")).isFalse();
+            assertThat(columnExists(connection, "customers", "full_name")).isFalse();
+            assertThat(columnExists(connection, "customers", "first_name")).isTrue();
+            assertThat(columnExists(connection, "customers", "last_name")).isTrue();
             assertThat(foreignKeyCount(connection, "orders", "customer_id")).isEqualTo(1);
             assertThat(foreignKeyCount(connection, "order_items", "product_id")).isEqualTo(1);
         }

@@ -1,3 +1,10 @@
+DROP TRIGGER customers_sync_name_formats ON customers;
+DROP FUNCTION sync_customer_name_formats();
+
+ALTER TABLE customers
+    DROP CONSTRAINT uq_customers_contact,
+    DROP COLUMN full_name;
+
 ALTER TABLE orders
     DROP COLUMN customer_full_name,
     DROP COLUMN customer_address,

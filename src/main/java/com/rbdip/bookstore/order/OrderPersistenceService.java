@@ -1,6 +1,7 @@
 package com.rbdip.bookstore.order;
 
 import com.rbdip.bookstore.customer.Customer;
+import com.rbdip.bookstore.customer.CustomerName;
 import com.rbdip.bookstore.customer.CustomerRepository;
 import com.rbdip.bookstore.product.Product;
 import java.util.List;
@@ -25,9 +26,13 @@ public class OrderPersistenceService {
     }
 
     public Order persist(CreateOrderRequest request, List<ResolvedOrderItem> resolvedItems) {
+        CustomerName customerName = CustomerName.from(request.customerFullName());
         Customer customer = customerRepository
-                .findByFullNameAndAddressAndPhone(
-                        request.customerFullName(), request.customerAddress(), request.customerPhone())
+                .findByFirstNameAndLastNameAndAddressAndPhone(
+                        customerName.firstName(),
+                        customerName.lastName(),
+                        request.customerAddress(),
+                        request.customerPhone())
                 .orElseGet(() -> customerRepository.save(
                         new Customer(request.customerFullName(), request.customerAddress(), request.customerPhone())));
         Order order = orderRepository.save(new Order(customer, NEW_ORDER_STATUS));
